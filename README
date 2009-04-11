@@ -1,0 +1,33 @@
+  __      _     _      _    
+ / _|__ _| |_  | |__ _| |__ 
+|  _/ _` |  _| | / _` | '_ \
+|_| \__,_|\__| |_\__,_|_.__/
+                            
+An IRC bot for the #fatlab channel
+: irc://irc.freenode.net/#fatlab
+: http://fffff.at
+
+
+!echo <your text here>
+Repeat something. See if bot works.
+
+!meme
+Spout an automeme from http://meme.boxofjunk.ws/api.html
+
+
+
+#TODO 
+
+!seen <nick>
+When did they last join? Don't forget to check 'jamiew_' too
+
+
+
+
+------ AUTHORS -------
+Jamie Wilkinson <http://jamiedubs.com>
+
+
+
+
+
