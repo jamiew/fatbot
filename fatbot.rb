@@ -16,10 +16,12 @@ configure do |c|
 end
 
 
-# just a simple superuserish check
+# just a simple check for FAT Lab fellows
 # count on NickServ for security :x
 def ops?(nick)
-  ['jamiew','ttttbx','fi5e','randofo','bekathwia','Geraldine_'].include?(nick)
+  # ['jamiew','ttttbx','fi5e','randofo','bekathwia','Geraldine','Geraldine_'].include?(nick)
+  # w/e, everyone for now
+  true
 end
 
 
@@ -68,8 +70,8 @@ on :channel, /^\!taco/ do
   msg channel, "/me gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"
 end
 
-# change the topic (ops)
+# change the topic by proxy (for bot-ops)
 on :channel, /^!topic (.*)/ do
-  msg channel, "/topic #fatlab #{match[0]}" if ops?(nick)
+   topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
 
