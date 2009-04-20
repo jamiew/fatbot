@@ -7,11 +7,11 @@
 
 require 'rubygems'
 require 'open-uri'
-require 'sequel'
+#require 'sequel'
 require 'isaac'
 #gem 'jnunemaker-twitter'; require 'twitter'
 
-DB = Sequel.sqlite('irc.db')
+#DB = Sequel.sqlite('irc.db')
 
 configure do |c|
   c.nick     = "dubtron"
@@ -82,6 +82,6 @@ end
 on :channel, /.*/ do
   msg = message.chomp
   puts "#{channel} <#{nick}> #{msg}"
-  DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
+  # DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
 end
 
