@@ -7,11 +7,13 @@
 
 require 'rubygems'
 require 'open-uri'
-#require 'sequel'
-require 'isaac'
-#gem 'jnunemaker-twitter'; require 'twitter'
 
-#DB = Sequel.sqlite('irc.db')
+require 'open-uri'  # for !meme
+require 'mechanize' # for !swineflu
+#gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
+
+# require 'sequel'
+# DB = Sequel.sqlite('irc.db')
 
 configure do |c|
   c.nick     = "dubtron"
@@ -23,16 +25,17 @@ end
 
 # just a simple check for FAT Lab fellows
 # count on NickServ for security :x
+# UPDATE: fuck it, allow everyone. FREE CULTURE BABY YEAH
 def ops?(nick)
-  ['jamiew','ttttbx','fi5e','randofo','bekathwia','Geraldine','Geraldine_'].include?(nick)
-  # w/e, everyone for now
-  # true
+  # ['jamiew','ttttbx','fi5e','randofo','bekathwia','Geraldine','Geraldine_'].include?(nick)
+  true
 end
 
 
 # CONNECT
 on :connect do
-  join "#tumblrs", "#fatlab"
+  # join "#tumblrs", "#fatlab"
+  join "#fatlab"
 end
 
 
@@ -67,9 +70,20 @@ on :channel, /^\!taco/ do
 end
 
 # change the topic by proxy (for bot-ops)
-on :channel, /^!topic (.*)/ do
+on :channel, /^\!topic (.*)/ do
    topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
+
+# swine flu report (USA only for now)
+# the CDC has a nice report with latest US stats, but not global
+on :channel, /^\!(swineflu|pigflu).*/ do
+  url, shorturl = "http://www.cdc.gov/swineflu/", "http://bit.ly/eeat8"
+  agent = WWW::Mechanize.new # TODO: use a global agent & set user-agent to FATBOT YEAH
+  page = agent.get(url)
+  totals = (page/'#situationupdate strong')
+  text = "Swine Flu USA: #{totals[1].content},#{totals[2].content} -- #{shorturl}"
+  msg channel, text
+end 
 
 
 # do URL detection & logging, idea vi sh1v
@@ -79,9 +93,8 @@ end
 
 # lastly, do logging
 # from http://github.com/jamie/ircscribe/
-on :channel, /.*/ do
-  msg = message.chomp
-  puts "#{channel} <#{nick}> #{msg}"
-  # DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
-end
-
+# on :channel, /.*/ do
+#   msg = message.chomp
+#   puts "#{channel} <#{nick}> #{msg}"
+#   # DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
+# end
