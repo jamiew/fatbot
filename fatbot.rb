@@ -9,6 +9,7 @@ require 'rubygems'
 require 'open-uri'
 require 'sequel'
 require 'isaac'
+require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter'; require 'twitter'
 
 DB = Sequel.sqlite('irc.db')
@@ -77,6 +78,17 @@ on :channel, /http\:\/\/(.*)\s?/ do
   puts "URL: #{match[0]} by #{nick}"
 end
 
+# swine flu report (USA only for now)
+# the CDC has a nice report with latest US stats, but not global
+on :channel, /^!(swineflu|pigflu)$/ do
+
+  url, shorturl = "http://www.cdc.gov/swineflu/", "http://bit.ly/eeat8"
+
+  page = WWW::Mechanize.new.get(url)
+  totals = (page/'#situationupdate strong')
+  msg channel, "OMFGBBQ. #{totals[1]}, #{totals[2]} -- #{shorturl}"
+end 
+
 # lastly, do logging
 # from http://github.com/jamie/ircscribe/
 on :channel, /.*/ do
@@ -84,4 +96,3 @@ on :channel, /.*/ do
   puts "#{channel} <#{nick}> #{msg}"
   DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
 end
-
