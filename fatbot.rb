@@ -6,7 +6,7 @@
 # dependencies: isaac, sequel, jnunemaker-twitter
 
 require 'rubygems'
-require 'open-uri'
+require 'isaac'
 
 require 'open-uri'  # for !meme
 require 'mechanize' # for !swineflu
