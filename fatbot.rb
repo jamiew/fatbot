@@ -91,8 +91,8 @@ end
 
 # lastly, do logging
 # from http://github.com/jamie/ircscribe/
-on :channel, /.*/ do
-  msg = message.chomp
-  puts "#{channel} <#{nick}> #{msg}"
-  DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
-end
+# on :channel, /.*/ do
+#   msg = message.chomp
+#   puts "#{channel} <#{nick}> #{msg}"
+#   # DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
+# end
