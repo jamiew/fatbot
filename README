@@ -3,7 +3,8 @@
 |  _/ _` |  _| | / _` | '_ \
 |_| \__,_|\__| |_\__,_|_.__/
                             
-An IRC bot for the #fatlab channel
+A helpful bot for the F.A.T. IRC channel
+made using the Isaac library 
 : irc://irc.freenode.net/#fatlab
 : http://fffff.at
 
@@ -14,12 +15,20 @@ Repeat something. See if bot works.
 !meme
 Spout an automeme from http://meme.boxofjunk.ws/api.html
 
+!swineflu
+Gives the latest stats from http://cdc.gov
+
+!taco
+Gives you a random taco using a broken /me
 
 
-#TODO 
 
-!seen <nick>
-When did they last join? Don't forget to check 'jamiew_' too
+
+### TODO 
+- !seen <nick> for when they last joined
+- URL logging (partially done)
+- text logging
+- ??
 
 
 
