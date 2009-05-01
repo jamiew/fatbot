@@ -77,10 +77,11 @@ end
 # swine flu report (USA only for now)
 # the CDC has a nice report with latest US stats, but not global
 on :channel, /^\!(swineflu|pigflu).*/ do
-  url, shorturl = "http://www.cdc.gov/swineflu/", "http://bit.ly/eeat8"
+  url, shorturl = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8"
   agent = WWW::Mechanize.new # TODO: use a global agent & set user-agent to FATBOT YEAH
   page = agent.get(url)
   totals = (page/'#situationupdate strong')
+  raise "no totals data!" if totals.nil? or totals[1].nil? or totals[2].nil?
   text = "Swine Flu USA: #{totals[1].content},#{totals[2].content} -- #{shorturl}"
   msg channel, text
 end 
