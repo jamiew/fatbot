@@ -34,7 +34,7 @@ end
 
 # CONNECT
 on :connect do
-  # join "#tumblrs", "#fatlab"
+#  join "#tumblrs", "#fatlab", "#rboom"
   join "#fatlab"
 end
 
@@ -80,9 +80,9 @@ on :channel, /^\!(swineflu|pigflu).*/ do
   url, shorturl = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8"
   agent = WWW::Mechanize.new # TODO: use a global agent & set user-agent to FATBOT YEAH
   page = agent.get(url)
-  totals = (page/'#situationupdate strong')
-  raise "no totals data!" if totals.nil? or totals[1].nil? or totals[2].nil?
-  text = "Swine Flu USA: #{totals[1].content},#{totals[2].content} -- #{shorturl}"
+  totals = (page/'.mSyndicate strong')
+  puts "no totals data!" and return if totals.nil? or totals[1].nil? or totals[2].nil?
+  text = "#{totals[0].content}: #{totals[2].content}, #{totals[3].content} -- http://www.cdc.gov/h1n1flu/"
   msg channel, text
 end 
 
