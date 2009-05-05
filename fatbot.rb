@@ -74,7 +74,7 @@ on :channel, /^\!search_twitter (.*)/ do
       when /\:all/
         _query = match[0].gsub(":all",''); _rindex = -1
       else
-        _query = match[0]; _rindex = 4
+        _query = match[0]; _rindex = 2
     end
 
     result = $twitter.query :q => "#{_query}"
@@ -97,11 +97,13 @@ end
 
 # give you a taco. via gerry
 # TODO: we need more tacos
-# FIXME: how to do actions? not sure if isaac handles
+# FIXME: NOTICE or ACTION
 on :channel, /^\!taco/ do
   tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp']
-  msg channel, "/me gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"
+  # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
+  raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
 end
+
 
 # change the topic by proxy (for bot-ops)
 on :channel, /^\!topic (.*)/ do
