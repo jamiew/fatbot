@@ -14,6 +14,7 @@ require 'mechanize' # for !swineflu
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
+$link_store ||= []
 
 configure do |c|
   c.nick     = "dubtron"
@@ -77,20 +78,31 @@ end
 # swine flu report (USA only for now)
 # the CDC has a nice report with latest US stats, but not global
 on :channel, /^\!(swineflu|pigflu).*/ do
-  url, shorturl = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8"
-  agent = WWW::Mechanize.new # TODO: use a global agent & set user-agent to FATBOT YEAH
-  page = agent.get(url)
-  totals = (page/'.mSyndicate strong')
-  puts "no totals data!" and return if totals.nil? or totals[1].nil? or totals[2].nil?
-  text = "#{totals[0].content}: #{totals[2].content}, #{totals[3].content} -- http://www.cdc.gov/h1n1flu/"
+  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8", []
+  begin
+    agent = WWW::Mechanize.new; page = agent.get(url)
+    totals = (page/'.mSyndicate strong')[ 0..3 ].collect { |i| i.innerText }
+    raise "no totals" if totals.size < 3
+  rescue Exception => e
+    text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
+  else
+    text = "#{totals.first}: #{totals[2..3].join(", ")} -- http://www.cdc.gov/h1n1flu/"
+  end
   msg channel, text
-end 
+end
 
 
 # do URL detection & logging, idea vi sh1v
 on :channel, /http\:\/\/(.*)\s?/ do
-  puts "URL: #{match[0]} by #{nick}"
+  $link_store << { :url => match[0], :nick => nick, :date => Time.now }
+  $link_store.shift if $link_store.size > 10
+  puts "URL: #{match[0]} by #{nick} : #{$link_store.size}"
 end
+
+on :channel, /^\!(links|bookmarks).*/ do
+  msg channel, $link_store.collect { |l| "#{l[:url]} by #{l[:nick]}" }.join("\n")
+end
+
 
 # lastly, do logging
 # from http://github.com/jamie/ircscribe/
