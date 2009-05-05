@@ -4,6 +4,7 @@
 # http://jamiedubs.com
 #
 # dependencies: isaac, sequel, jnunemaker-twitter
+%w{/vendor /vendor/utils}.collect{|ld|$:.unshift File.dirname(__FILE__)+ld}
 
 require 'rubygems'
 require 'isaac'
@@ -11,10 +12,13 @@ require 'isaac'
 require 'open-uri'  # for !meme
 require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
+puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
+
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
 $link_store ||= []
+$twitter ||= TwitterSearch::Client.new
 
 configure do |c|
   c.nick     = "dubtron"
@@ -60,7 +64,36 @@ on :channel, /^\!twitter (.*)/ do
   cred = YAML.load('twitter.yml')
   # TODO do some stuff with twitter gem
   msg channel, "*** posting announcement by #{nick} to http://twitter.com/fffffat ..."
-end 
+end
+
+
+# ..
+on :channel, /^\!search_twitter (.*)/ do
+  begin
+    case match[0]
+      when /\:all/
+        _query = match[0].gsub(":all",''); _rindex = -1
+      else
+        _query = match[0]; _rindex = 4
+    end
+
+    result = $twitter.query :q => "#{_query}"
+    msg channel, "search_twitter: #{_query} (#{result.size} results)"
+    result[0.._rindex].collect { |i|
+      msg channel, "'#{i.text}' - #{i.from_user} (#{i.time_ago})"
+    }
+  rescue Exception => e
+    msg channel, "search_twitter: (#{e.message}) - twitter timeout."
+  end
+end
+
+# ..
+on :channel, /^\!fatlab_twitter/ do
+  result = $twitter.query :q => "fatlab" # '#fatlab' ?
+  msg channel, "fatlab_twitter: (#{result.size} results)"
+  result.collect { |i| msg channel, "'#{i.text}' - #{i.from_user} (#{i.time_ago})" }
+end
+
 
 # give you a taco. via gerry
 # TODO: we need more tacos
@@ -100,7 +133,8 @@ on :channel, /http\:\/\/(.*)\s?/ do
 end
 
 on :channel, /^\!(links|bookmarks).*/ do
-  msg channel, $link_store.collect { |l| "#{l[:url]} by #{l[:nick]}" }.join("\n")
+  msg channel, "last urls: (#{$link_store.size})"
+  $link_store.collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }
 end
 
 
