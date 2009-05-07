@@ -39,7 +39,7 @@ end
 
 # CONNECT
 on :connect do
-#  join "#tumblrs", "#fatlab", "#rboom"
+  # join "#tumblrs", "#fatlab", "#rboom"
   join "#fatlab"
 end
 
@@ -97,7 +97,6 @@ end
 
 # give you a taco. via gerry
 # TODO: we need more tacos
-# FIXME: NOTICE or ACTION
 on :channel, /^\!taco/ do
   tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp']
   # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
@@ -115,13 +114,12 @@ end
 on :channel, /^\!(swineflu|pigflu).*/ do
   url, shorturl, totals = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8", []
   begin
-    agent = WWW::Mechanize.new; page = agent.get(url)
-    totals = (page/'.mSyndicate strong')[ 0..3 ].collect { |i| i.innerText }
+    page = WWW::Mechanize.new.get(url)
+    totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
     raise "no totals" if totals.size < 3
+    text = "#{totals.first}: #{totals[2..3].join(",")} -- http://www.cdc.gov/h1n1flu/"
   rescue Exception => e
     text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
-  else
-    text = "#{totals.first}: #{totals[2..3].join(", ")} -- http://www.cdc.gov/h1n1flu/"
   end
   msg channel, text
 end
