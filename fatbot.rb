@@ -15,26 +15,6 @@ require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
 puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
 
-def time_ago_or_time_stamp(from_time, to_time = Time.now, include_seconds = true, detail = false)
-  x = Time.parse from_time
-  x = x.to_time if x.respond_to?(:to_time)
-  to_time = to_time.to_time if to_time.respond_to?(:to_time)
-  distance_in_minutes = (((to_time - x).abs)/60).round
-  distance_in_seconds = ((to_time - x).abs).round
-  case distance_in_minutes
-    when 0..1           then time = (distance_in_seconds < 60) ? "#{distance_in_seconds} seconds ago" : '1 minute ago'
-    when 2..59          then time = "#{distance_in_minutes} minutes ago"
-    when 60..90         then time = "1 hour ago"
-    when 90..1440       then time = "#{(distance_in_minutes.to_f / 60.0).round} hours ago"
-    when 1440..2160     then time = '1 day ago' # 1-1.5 days
-    when 2160..2880     then time = "#{(distance_in_minutes.to_f / 1440.0).round} days ago" # 1.5-2 days
-    else time = x.strftime("%a, %d %b %Y")
-  end
-  return time_stamp(x) if (detail && distance_in_minutes > 2880)
-  return time
-end
-
-
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
 $link_store ||= []
@@ -139,7 +119,7 @@ on :channel, /^\!(swineflu|pigflu).*/ do
     timedate = (page/'.mSyndicate span').map { |i| i.content }[0..1]
     raise "no totals" if totals.size < 3
     if timedate[1] =~ /\(As of (.+)\)/
-      timedate[1] = time_ago_or_time_stamp($1)
+      timedate[1] = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
     end
  
     text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate[1]}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
