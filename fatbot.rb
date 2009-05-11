@@ -132,7 +132,7 @@ end
 # swine flu report (USA only for now)
 # the CDC has a nice report with latest US stats, but not global
 on :channel, /^\!(swineflu|pigflu).*/ do
-  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/eeat8", []
+  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/18L44G", []
   begin
     page = WWW::Mechanize.new.get(url)
     totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
