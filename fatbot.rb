@@ -8,11 +8,31 @@
 
 require 'rubygems'
 require 'isaac'
+require 'time'
 
 require 'open-uri'  # for !meme
 require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
 puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
+
+def time_ago_or_time_stamp(from_time, to_time = Time.now, include_seconds = true, detail = false)
+  x = Time.parse from_time
+  x = x.to_time if x.respond_to?(:to_time)
+  to_time = to_time.to_time if to_time.respond_to?(:to_time)
+  distance_in_minutes = (((to_time - x).abs)/60).round
+  distance_in_seconds = ((to_time - x).abs).round
+  case distance_in_minutes
+    when 0..1           then time = (distance_in_seconds < 60) ? "#{distance_in_seconds} seconds ago" : '1 minute ago'
+    when 2..59          then time = "#{distance_in_minutes} minutes ago"
+    when 60..90         then time = "1 hour ago"
+    when 90..1440       then time = "#{(distance_in_minutes.to_f / 60.0).round} hours ago"
+    when 1440..2160     then time = '1 day ago' # 1-1.5 days
+    when 2160..2880     then time = "#{(distance_in_minutes.to_f / 1440.0).round} days ago" # 1.5-2 days
+    else time = x.strftime("%a, %d %b %Y")
+  end
+  return time_stamp(x) if (detail && distance_in_minutes > 2880)
+  return time
+end
 
 
 # require 'sequel'
@@ -112,12 +132,17 @@ end
 # swine flu report (USA only for now)
 # the CDC has a nice report with latest US stats, but not global
 on :channel, /^\!(swineflu|pigflu).*/ do
-  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/index.htm", "http://bit.ly/eeat8", []
+  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/eeat8", []
   begin
     page = WWW::Mechanize.new.get(url)
     totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
+    timedate = (page/'.mSyndicate span').map { |i| i.content }[0..1]
     raise "no totals" if totals.size < 3
-    text = "#{totals.first}: #{totals[2..3].join(",")} -- http://www.cdc.gov/h1n1flu/"
+    if timedate[1] =~ /\(As of (.+)\)/
+      timedate[1] = time_ago_or_time_stamp($1)
+    end
+ 
+    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate[1]}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
   rescue Exception => e
     text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
   end
