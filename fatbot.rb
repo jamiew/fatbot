@@ -48,19 +48,19 @@ end
 
 # echo things like "quote this: some text"
 #TODO: make just if via a private msg from ops or something
-on :channel, /^\!echo (.*)/ do
+on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
   # msg channel, "#{match[0]} by #{nick}"
 end
 
 # give me a meme using inky's automeme ENTERPRISE API
-on :channel, /^\!meme/ do
+on :channel, /^\!meme/i do
  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp
  msg channel, meme
 end
 
 # post to a shared twitter account
-on :channel, /^\!twitter (.*)/ do
+on :channel, /^\!twitter (.*)/i do
   cred = YAML.load('twitter.yml')
   # TODO do some stuff with twitter gem
   msg channel, "*** posting announcement by #{nick} to http://twitter.com/fffffat ..."
@@ -68,7 +68,7 @@ end
 
 
 # ..
-on :channel, /^\!search_twitter (.*)/ do
+on :channel, /^\!search_twitter (.*)/i do
   begin
     case match[0]
       when /\:all/
@@ -88,7 +88,7 @@ on :channel, /^\!search_twitter (.*)/ do
 end
 
 # ..
-on :channel, /^\!fatlab_twitter/ do
+on :channel, /^\!fatlab_twitter/i do
   result = $twitter.query :q => "fatlab" # '#fatlab' ?
   msg channel, "fatlab_twitter: (#{result.size} results)"
   result.collect { |i| msg channel, "'#{i.text}' - #{i.from_user} (#{i.time_ago})" }
@@ -97,7 +97,7 @@ end
 
 # give you a taco. via gerry
 # TODO: we need more tacos
-on :channel, /^\!taco/ do
+on :channel, /^\!taco/i do
   tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp']
   # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
   raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
@@ -105,13 +105,13 @@ end
 
 
 # change the topic by proxy (for bot-ops)
-on :channel, /^\!topic (.*)/ do
+on :channel, /^\!topic (.*)/i do
    topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
 
 # swine flu report (USA only for now)
 # the CDC has a nice report with latest US stats, but not global
-on :channel, /^\!(swineflu|pigflu).*/ do
+on :channel, /^\!(swineflu|pigflu).*/i do
   url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/18L44G", []
   begin
     page = WWW::Mechanize.new.get(url)
@@ -137,7 +137,7 @@ on :channel, /http\:\/\/(.*)\s?/ do
   puts "URL: #{match[0]} by #{nick} : #{$link_store.size}"
 end
 
-on :channel, /^\!(links|bookmarks).*/ do
+on :channel, /^\!(links|bookmarks).*/i do
   msg channel, "last urls: (#{$link_store.size})"
   $link_store.collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }
 end
