@@ -59,6 +59,12 @@ on :channel, /^\!meme/i do
  msg channel, meme
 end
 
+# print a Kanye quote from THE QUOTABLE KANYE, http://jamiedubs.com/quotable-kanye/
+on :channel, /^\!kanye/i do
+ quote = open("http://jamiedubs.com/quotable-kanye/api.txt").read.chomp
+ msg channel, quote
+end
+
 # post to a shared twitter account
 on :channel, /^\!twitter (.*)/i do
   cred = YAML.load('twitter.yml')
@@ -98,7 +104,7 @@ end
 # give you a taco. via gerry
 # TODO: we need more tacos
 on :channel, /^\!taco/i do
-  tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp']
+  tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp', 'swineflu']
   # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
   raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
 end
