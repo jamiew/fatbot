@@ -16,7 +16,7 @@ module TwitterSearch
     end
 
     def time_ago
-      self.time_ago_or_time_stamp Time.parse( @created_at[0..18] )
+      self.class.time_ago_or_time_stamp Time.parse( @created_at[0..18] )
     end
     def self.time_ago_or_time_stamp(from_time, to_time = Time.now, include_seconds = true, detail = false)
       from_time = from_time.to_time if from_time.respond_to?(:to_time)
