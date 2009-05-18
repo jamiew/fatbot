@@ -124,11 +124,9 @@ on :channel, /^\!(swineflu|pigflu).*/i do
     totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
     timedate = (page/'.mSyndicate span').map { |i| i.content }[0..1]
     raise "no totals" if totals.size < 3
-    if timedate[1] =~ /\(As of (.+)\)/
-      timedate[1] = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
-    end
+    timeago = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse(timedate[0]) )
  
-    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate[1]}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
+    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timeago}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
   rescue Exception => e
     text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
   end
