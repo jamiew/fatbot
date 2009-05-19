@@ -122,11 +122,14 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   begin
     page = WWW::Mechanize.new.get(url)
     totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
-    timedate = (page/'.mSyndicate span').map { |i| i.content }[0..1]
+    timedate = (page/'.mSyndicate span').map { |i| i.content }[2]
     raise "no totals" if totals.size < 3
-    timeago = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse(timedate[0]) )
- 
-    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timeago}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
+    
+    if timedate =~ /\(As of (.+)\)/
+     timedate = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
+    end
+     
+    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
   rescue Exception => e
     text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
   end
