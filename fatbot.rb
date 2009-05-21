@@ -123,6 +123,7 @@ on :channel, /^\!(swineflu|pigflu).*/i do
     page = WWW::Mechanize.new.get(url)
     totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
     timedate = (page/'.mSyndicate span').map { |i| i.content }[2]
+    totals[1].gsub!(/\t/,'')
     raise "no totals" if totals.size < 3
     
     if timedate =~ /\(As of (.+)\)/
