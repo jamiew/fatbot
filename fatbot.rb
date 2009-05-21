@@ -17,7 +17,7 @@ puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", 
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
-$link_store ||= []
+$link_store ||= {}
 $twitter ||= TwitterSearch::Client.new
 
 configure do |c|
@@ -140,14 +140,19 @@ end
 
 # do URL detection & logging, idea vi sh1v
 on :channel, /http\:\/\/(.*)\s?/ do
-  $link_store << { :url => match[0], :nick => nick, :date => Time.now }
-  $link_store.shift if $link_store.size > 10
-  puts "URL: #{match[0]} by #{nick} : #{$link_store.size}"
+  $link_store[channel] ||= []
+  $link_store[channel] << { :url => match[0], :nick => nick, :date => Time.now }
+  $link_store[channel].shift if $link_store[channel].size > 10
+  puts "URL: #{match[0]} by #{nick} : #{$link_store[channel].size}"
 end
 
 on :channel, /^\!(links|bookmarks).*/i do
-  msg channel, "last urls: (#{$link_store.size})"
-  $link_store.collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }
+  if $link_store[channel]
+    msg channel, "last urls: (#{$link_store[channel].size})"
+    $link_store[channel].collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }
+  else
+    msg channel, "no urls.."
+  end
 end
 
 
