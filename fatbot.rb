@@ -121,8 +121,8 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/18L44G", []
   begin
     page = WWW::Mechanize.new.get(url)
-    totals = (page/'.mSyndicate strong').map { |i| i.content }[1..4]
-    timedate = (page/'.mSyndicate span').map { |i| i.content }[2]
+    totals = (page/'.mSyndicate strong').map { |i| i.content }[1..3]
+    timedate = (page/'.mSyndicate caption span').map { |i| i.content }[0]
     totals[1].gsub!(/\t/,'')
     raise "no totals" if totals.size < 3
     
