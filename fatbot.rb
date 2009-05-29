@@ -10,7 +10,7 @@ require 'rubygems'
 require 'isaac'
 require 'time'
 
-require 'open-uri'  # for !meme
+require 'open-uri'  # for !meme, !swineflu
 require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
 puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
@@ -115,24 +115,37 @@ on :channel, /^\!topic (.*)/i do
    topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
 
+
 # swine flu report (USA only for now)
-# the CDC has a nice report with latest US stats, but not global
+# data is from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker
+# http://flutracker.rhizalabs.com/
+# http://flutracker.rhizalabs.com/flu/downloads.html
+# data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License. 
 on :channel, /^\!(swineflu|pigflu).*/i do
-  url, shorturl, totals = "http://www.cdc.gov/h1n1flu/update.htm", "http://bit.ly/18L44G", []
+  url, shorturl, totals = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", []
   begin
     page = WWW::Mechanize.new.get(url)
-    totals = (page/'.mSyndicate strong').map { |i| i.content }[1..3]
-    timedate = (page/'.mSyndicate caption span').map { |i| i.content }[0]
-    totals[1].gsub!(/\t/,'')
-    raise "no totals" if totals.size < 3
-    
-    if timedate =~ /\(As of (.+)\)/
-     timedate = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
+    aggregates = (page/'script').map { |i| i.content }
+    if aggregates[5] =~ /aggregates-(\d+).js/
+      timedate = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
     end
-     
-    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate}): #{totals[1..2].join(", ")} -- http://www.cdc.gov/h1n1flu/"
+
+    aggurl = "http://flutracker.rhizalabs.com/flu/aggregates-#{$1}.js"
+    fludata = open(aggurl, 'User-Agent' => 'Fatbot')
+    fludata = Crack::JSON.parse(fludata.read)
+    fludata.each do |x|
+      if x["country"] == "US"
+        USdata = x
+      end
+    end
+
+    cases = USdata["cases"]
+    fatal = USdata["Fatal"]
+    
+    text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate}): Cases: #{cases} - Deaths: #{fatal} -- http://flutracker.rhizalabs.com/"
+
   rescue Exception => e
-    text = (e.message == "no totals") ? "no totals data! #{totals.inspect}" : "Exception: #{e.message}"
+    text = "Exception: #{e.message}"
   end
   msg channel, text
 end
