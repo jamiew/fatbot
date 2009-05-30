@@ -122,7 +122,7 @@ end
 # http://flutracker.rhizalabs.com/flu/downloads.html
 # data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License. 
 on :channel, /^\!(swineflu|pigflu).*/i do
-  url, shorturl, totals = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", []
+  url, shorturl, totals, usdata = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", [], 0
   begin
     page = WWW::Mechanize.new.get(url)
     aggregates = (page/'script').map { |i| i.content }
@@ -135,12 +135,12 @@ on :channel, /^\!(swineflu|pigflu).*/i do
     fludata = Crack::JSON.parse(fludata.read)
     fludata.each do |x|
       if x["country"] == "US"
-        USdata = x
+        usdata = x
       end
     end
 
-    cases = USdata["cases"]
-    fatal = USdata["Fatal"]
+    cases = usdata["cases"]
+    fatal = usdata["Fatal"]
     
     text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate}): Cases: #{cases} - Deaths: #{fatal} -- http://flutracker.rhizalabs.com/"
 
