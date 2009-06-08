@@ -126,11 +126,15 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   begin
     page = WWW::Mechanize.new.get(url)
     aggregates = (page/'script').map { |i| i.content }
-    if aggregates[5] =~ /aggregates-(\d+).js/
+    
+    
+    #initialize('200906081850/aggregates.js', '200906081850/states.js', '200906081850');
+
+    if aggregates[5] =~ /(\d+)\/aggregates.js/
       timedate = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
     end
 
-    aggurl = "http://flutracker.rhizalabs.com/flu/aggregates-#{$1}.js"
+    aggurl = "http://flutracker.rhizalabs.com/flu/#{$1}/aggregates.js"
     fludata = open(aggurl, 'User-Agent' => 'Fatbot')
     fludata = Crack::JSON.parse(fludata.read)
     fludata.each do |x|
