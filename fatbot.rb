@@ -13,6 +13,7 @@ require 'time'
 require 'open-uri'  # for !meme, !swineflu
 require 'mechanize' # for !swineflu
 #gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
+require 'twitter'
 puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
 
 # require 'sequel'
@@ -67,9 +68,13 @@ end
 
 # post to a shared twitter account
 on :channel, /^\!twitter (.*)/i do
-  cred = YAML.load('twitter.yml')
-  # TODO do some stuff with twitter gem
-  msg channel, "*** posting announcement by #{nick} to http://twitter.com/fffffat ..."
+  cred = YAML.load(File.open('twitter.yml'))
+
+  httpauth = Twitter::HTTPAuth.new(cred['username'], cred['password'])
+  base = Twitter::Base.new(httpauth)
+  base.update(match[0])
+
+  msg channel, "*** affirmative #{nick}, posted to #{cred['username'].inspect}"
 end
 
 
