@@ -5,9 +5,11 @@
                             
 A helpful bot for the F.A.T. IRC channel
 made using the Isaac library 
-: irc://irc.freenode.net/#fatlab
-: http://fffff.at
+-~-> irc://irc.freenode.net/#fatlab
+-~-> http://fffff.at
 
+
+=== Commands ===
 
 !echo <your text here>
 Repeat something. See if bot works.
@@ -16,25 +18,42 @@ Repeat something. See if bot works.
 Spout an automeme from http://meme.boxofjunk.ws/api.html
 
 !swineflu
-Gives the latest stats from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker
+Print the latest H1N1 stats from Rhiza Labs FluTracker, http://flutracker.org (scary)
 
 !taco
 Gives you a random taco using a broken /me
 
+!kanye
+Random Kanye West quote via http://jamiedubs.com/quotable-kanye
+
+!twitter <msg>
+Post msg to a shared twitter account (require permission)
+
+!topic <msg>
+Set the channel topic to msg, no ops required (requires permission)
+
+!search_twitter <keywords>
+Print the latest twitter results for a given search (can be noisy)
+
+
+=== In-Progress ===
+
+!url
+List last-mentioned URL (stored in memory) -- more sophisticated stuff would be cool
+
+
+=== Wishlist ===
+
+- !seen <nick> -- for when someone last joined
+- infobot-style question/answer storage (channel FAQ)
 
 
 
-### TODO 
-- !seen <nick> for when they last joined
-- URL logging (partially done)
-- text logging
-- ??
+=== Authors ===
 
-
-
-
------- AUTHORS -------
-Jamie Wilkinson <http://jamiedubs.com>
+* Jamie Wilkinson <http://github.com/jamiew>
+* Sam Lehman <http://github.com/samlehman>
+* Lian <http://github.com/lian>
 
 
 

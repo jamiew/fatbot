@@ -12,9 +12,11 @@ require 'time'
 
 require 'open-uri'  # for !meme, !swineflu
 require 'mechanize' # for !swineflu
-#gem 'jnunemaker-twitter', :lib => 'twitter' for !twitter
-require 'twitter'
-puts %w{twitter_search flickraw}.collect{|ld|ld+': '+require(ld).to_s}#.join(", ")
+require 'twitter' # for !twitter posting
+require 'search_twiter' # for !search_twitter queries
+
+# Unused internal libraries -- possibly will be deprecated soon
+# puts %w{twitter_search flickraw}.collect{ |ld| ld+': '+require(ld).to_s }#.join(", ")
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
@@ -31,30 +33,24 @@ end
 
 # just a simple check for FAT Lab fellows
 # count on NickServ for security :x
-# UPDATE: fuck it, allow everyone. FREE CULTURE BABY YEAH
 def ops?(nick)
-  # ['jamiew','ttttbx','fi5e','randofo','bekathwia','Geraldine','Geraldine_'].include?(nick)
-  true
+  ['jamiew','ttttbx','fi5e','randofo','bekathwia','agoasi','MissSubmarine','gleuch','monki'].include?(nick)
 end
 
 
 # CONNECT
 on :connect do
-  # join "#tumblrs", "#fatlab", "#rboom"
-  join "#fatlab"
+  join "#fatlab", "#knowyourmeme"
 end
-
 
 
 
 # echo things like "quote this: some text"
-#TODO: make just if via a private msg from ops or something
 on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
-  # msg channel, "#{match[0]} by #{nick}"
 end
 
-# give me a meme using inky's automeme ENTERPRISE API
+# give me a meme using Automeme's "ENTERPRISE" API (by inky)
 on :channel, /^\!meme/i do
  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp
  msg channel, meme
@@ -67,6 +63,7 @@ on :channel, /^\!kanye/i do
 end
 
 # post to a shared twitter account
+# keep your settings in twiter.yml
 on :channel, /^\!twitter (.*)/i do
   cred = YAML.load(File.open('twitter.yml'))
 
@@ -89,20 +86,13 @@ on :channel, /^\!search_twitter (.*)/i do
     end
 
     result = $twitter.query :q => "#{_query}"
-    msg channel, "search_twitter: #{_query} (#{result.size} results)"
+    # msg channel, "search_twitter: #{_query} (#{result.size} results)"
     result[0.._rindex].collect { |i|
       msg channel, "'#{i.text}' - #{i.from_user} (#{i.time_ago})"
     }
   rescue Exception => e
     msg channel, "search_twitter: (#{e.message}) - twitter timeout."
   end
-end
-
-# ..
-on :channel, /^\!fatlab_twitter/i do
-  result = $twitter.query :q => "fatlab" # '#fatlab' ?
-  msg channel, "fatlab_twitter: (#{result.size} results)"
-  result.collect { |i| msg channel, "'#{i.text}' - #{i.from_user} (#{i.time_ago})" }
 end
 
 
@@ -177,8 +167,7 @@ on :channel, /^\!(links|bookmarks).*/i do
   end
 end
 
-
-# lastly, do logging
+# lastly, do logging of all text
 # from http://github.com/jamie/ircscribe/
 # on :channel, /.*/ do
 #   msg = message.chomp
