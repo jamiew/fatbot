@@ -18,7 +18,7 @@ Repeat something. See if bot works.
 Spout an automeme from http://meme.boxofjunk.ws/api.html
 
 !swineflu
-Print the latest H1N1 stats from Rhiza Labs FluTracker, http://flutracker.org (scary)
+Print the latest H1N1 stats from Rhiza Labs FluTracker, http://flutracker.rhizalabs.com/ (scary)
 
 !taco
 Gives you a random taco using a broken /me
