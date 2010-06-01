@@ -149,7 +149,7 @@ end
 on :channel, /^\!links/i do
   if $link_store[channel]
     msg channel, "Most Recent URLs (#{$link_store[channel].size} total)"
-    $link_store[channel].collect { |l| msg channel, "http://#{l[:url]} posted by #{l[:nick]}" }[0..2]
+    $link_store[channel].collect { |l| msg channel, "http://#{l[:url]} posted by #{l[:nick]}" }[-3..-1]
   else
     msg channel, "No URLs yet!"
   end
