@@ -5,16 +5,16 @@
 #
 # dependencies: isaac, sequel, jnunemaker-twitter, mechanize
  
-%w{/vendor /vendor/utils}.collect{|ld|$:.unshift File.dirname(__FILE__)+ld}
+require 'time'
+require 'open-uri'
 
 require 'rubygems'
 require 'isaac'
-require 'time'
-
-require 'open-uri'  # for !meme, !swineflu
 require 'mechanize' # for !swineflu
 require 'twitter' # for !twitter posting
-require 'search_twiter' # for !search_twitter queries
+
+%w{/vendor /vendor/utils}.collect{ |dir| $:.unshift File.dirname(__FILE__)+dir }
+%w{twitter_search flickraw}.collect{ |lib| require(lib).to_s }
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
@@ -27,7 +27,6 @@ configure do |c|
   c.server   = "irc.freenode.net"
   c.port     = 6667
 end
-
 
 # NickServ-based security: simple check for FAT Lab fellows
 def ops?(nick)
@@ -139,21 +138,20 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   msg channel, text
 end
 
-# do URL detection & logging, idea vi sh1v
+# do URL detection & logging -- idea via sh1v
 on :channel, /http\:\/\/(.*)\s?/ do
   $link_store[channel] ||= []
   $link_store[channel] << { :url => match[0], :nick => nick, :date => Time.now }
   $link_store[channel].shift if $link_store[channel].size > 10
-  # puts "URL: #{match[0]} by #{nick} : #{$link_store[channel].size}"
 end
 
 # echo back collected URLs
-on :channel, /^\!(links|bookmarks).*/i do
+on :channel, /^\!links/i do
   if $link_store[channel]
-    msg channel, "last urls: (#{$link_store[channel].size})"
-    $link_store[channel].collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }
+    msg channel, "Recent URLs: (#{$link_store[channel].size} total)"
+    $link_store[channel].collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }[0..2]
   else
-    msg channel, "no urls.."
+    msg channel, "No URLs yet!"
   end
 end
 
