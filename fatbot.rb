@@ -3,7 +3,8 @@
 # his name is DUBTRON 9000
 # http://jamiedubs.com
 #
-# dependencies: isaac, sequel, jnunemaker-twitter
+# dependencies: isaac, sequel, jnunemaker-twitter, mechanize
+ 
 %w{/vendor /vendor/utils}.collect{|ld|$:.unshift File.dirname(__FILE__)+ld}
 
 require 'rubygems'
@@ -14,9 +15,6 @@ require 'open-uri'  # for !meme, !swineflu
 require 'mechanize' # for !swineflu
 require 'twitter' # for !twitter posting
 require 'search_twiter' # for !search_twitter queries
-
-# Unused internal libraries -- possibly will be deprecated soon
-# puts %w{twitter_search flickraw}.collect{ |ld| ld+': '+require(ld).to_s }#.join(", ")
 
 # require 'sequel'
 # DB = Sequel.sqlite('irc.db')
@@ -31,10 +29,9 @@ configure do |c|
 end
 
 
-# just a simple check for FAT Lab fellows
-# count on NickServ for security :x
+# NickServ-based security: simple check for FAT Lab fellows
 def ops?(nick)
-  ['jamiew','ttttbx','fi5e','randofo','bekathwia','agoasi','MissSubmarine','gleuch','monki'].include?(nick)
+  ['jamiew','ttttbx','fi5e','randofo','bekathwia','MissSubmarine','gleuch','agoasi','monki','bennett4senate'].include?(nick)
 end
 
 
@@ -43,8 +40,6 @@ on :connect do
   join "#fatlab", "#knowyourmeme"
 end
 
-
-
 # echo things like "quote this: some text"
 on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
@@ -52,19 +47,20 @@ end
 
 # give me a meme using Automeme's "ENTERPRISE" API (by inky)
 on :channel, /^\!meme/i do
- meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp
+ meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
  msg channel, meme
 end
 
 # print a Kanye quote from THE QUOTABLE KANYE, http://jamiedubs.com/quotable-kanye/
 on :channel, /^\!kanye/i do
- quote = open("http://jamiedubs.com/quotable-kanye/api.txt").read.chomp
+ quote = open("http://jamiedubs.com/quotable-kanye/api.txt").read.chomp rescue 'ERROR: could not reach Kanye Quote DB :-('
  msg channel, quote
 end
 
 # post to a shared twitter account
 # keep your settings in twiter.yml
 on :channel, /^\!twitter (.*)/i do
+  return unless ops?(nick)
   cred = YAML.load(File.open('twitter.yml'))
 
   httpauth = Twitter::HTTPAuth.new(cred['username'], cred['password'])
@@ -95,33 +91,27 @@ on :channel, /^\!search_twitter (.*)/i do
   end
 end
 
-
 # give you a taco. via gerry
-# TODO: we need more tacos
 on :channel, /^\!taco/i do
   tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp', 'swineflu']
   # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
   raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
 end
 
-
 # change the topic by proxy (for bot-ops)
 on :channel, /^\!topic (.*)/i do
    topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
 
-
 # swine flu report (USA only for now)
-# data is from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker
+# data is from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker:
 # http://flutracker.rhizalabs.com/
-# http://flutracker.rhizalabs.com/flu/downloads.html
 # data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License. 
 on :channel, /^\!(swineflu|pigflu).*/i do
   url, shorturl, totals, usdata = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", [], 0
   begin
-    page = WWW::Mechanize.new.get(url)
+    page = Mechanize.new.get(url)
     aggregates = (page/'script').map { |i| i.content }
-    
     
     #initialize('200906081850/aggregates.js', '200906081850/states.js', '200906081850');
 
@@ -149,15 +139,15 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   msg channel, text
 end
 
-
 # do URL detection & logging, idea vi sh1v
 on :channel, /http\:\/\/(.*)\s?/ do
   $link_store[channel] ||= []
   $link_store[channel] << { :url => match[0], :nick => nick, :date => Time.now }
   $link_store[channel].shift if $link_store[channel].size > 10
-  puts "URL: #{match[0]} by #{nick} : #{$link_store[channel].size}"
+  # puts "URL: #{match[0]} by #{nick} : #{$link_store[channel].size}"
 end
 
+# echo back collected URLs
 on :channel, /^\!(links|bookmarks).*/i do
   if $link_store[channel]
     msg channel, "last urls: (#{$link_store[channel].size})"
@@ -167,7 +157,17 @@ on :channel, /^\!(links|bookmarks).*/i do
   end
 end
 
-# lastly, do logging of all text
+# generate IRC stats using pisg
+on :channel, /^\!stats/i do
+  begin
+    IO.popen(File.dirname(__FILE__)+"/../pisg/pisg")
+    msg channel, "stats regenerated for channel, http://173.45.226.44/irc/#{channel.to_s.gsub('#','').downcase}.html"
+  rescue
+    msg channel, "Error generating stats: #{$!}"
+  end
+end
+
+# lastly, do logging
 # from http://github.com/jamie/ircscribe/
 # on :channel, /.*/ do
 #   msg = message.chomp
