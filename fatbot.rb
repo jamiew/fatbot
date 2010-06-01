@@ -148,8 +148,8 @@ end
 # echo back collected URLs
 on :channel, /^\!links/i do
   if $link_store[channel]
-    msg channel, "Recent URLs: (#{$link_store[channel].size} total)"
-    $link_store[channel].collect { |l| msg channel, "#{l[:url]} by #{l[:nick]}" }[0..2]
+    msg channel, "Most Recent URLs (#{$link_store[channel].size} total)"
+    $link_store[channel].collect { |l| msg channel, "http://#{l[:url]} posted by #{l[:nick]}" }[0..2]
   else
     msg channel, "No URLs yet!"
   end
