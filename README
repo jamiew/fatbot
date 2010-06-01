@@ -29,23 +29,21 @@ Random Kanye West quote via http://jamiedubs.com/quotable-kanye
 !twitter <msg>
 Post msg to a shared twitter account (require permission)
 
-!topic <msg>
-Set the channel topic to msg, no ops required (requires permission)
-
 !search_twitter <keywords>
 Print the latest twitter results for a given search (can be noisy)
 
+!topic <msg>
+Set the channel topic to msg, no ops required (requires permission)
 
-=== In-Progress ===
-
-!url
-List last-mentioned URL (stored in memory) -- more sophisticated stuff would be cool
+!links
+Prints the 3 last-mentioned URLs (stored in memory)
 
 
 === Wishlist ===
 
 - !seen <nick> -- for when someone last joined
 - infobot-style question/answer storage (channel FAQ)
+- multi-user Twitter configuration
 
 
 
@@ -55,7 +53,7 @@ List last-mentioned URL (stored in memory) -- more sophisticated stuff would be 
 * Sam Lehman <http://github.com/samlehman>
 * Lian <http://github.com/lian>
 
-
+Source code released under an MIT license
 
 
 
