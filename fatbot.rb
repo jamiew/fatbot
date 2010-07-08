@@ -148,9 +148,9 @@ end
 # echo back collected URLs
 on :channel, /^\!(links|lionks)/i do
   if $link_store[channel]
-    msg channel, "Most Recent URLs (#{$link_store[channel].size} total)"
+    msg channel, "Most recent links (#{$link_store[channel].size} total)"
     urls = $link_store[channel].map { |l| "http://#{l[:url]} posted by #{l[:nick]}" } || []
-    urls.uniq[-3..-1].each { |url| msg channel, url }
+    urls.uniq.reverse[0..2].each { |url| msg channel, url }
   else
     msg channel, "No URLs yet!"
   end
@@ -159,7 +159,7 @@ end
 # generate IRC stats using pisg
 on :channel, /^\!stats/i do
   begin
-    IO.popen(File.dirname(__FILE__)+"/../pisg/pisg")
+    system("#{File.dirname(__FILE__)}/../pisg/pisg &")
     msg channel, "stats regenerated for channel, http://173.45.226.44/irc/#{channel.to_s.gsub('#','').downcase}.html"
   rescue
     msg channel, "Error generating stats: #{$!}"
