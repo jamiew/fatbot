@@ -36,7 +36,7 @@ end
 
 # CONNECT
 on :connect do
-  join "#fatlab", "#knowyourmeme"
+  join "#fatlab", "#knowyourmeme", "#omgkym"
 end
 
 # echo things like "quote this: some text"
@@ -146,10 +146,11 @@ on :channel, /http\:\/\/(.*)\s?/ do
 end
 
 # echo back collected URLs
-on :channel, /^\!links/i do
+on :channel, /^\!(links|lionks)/i do
   if $link_store[channel]
     msg channel, "Most Recent URLs (#{$link_store[channel].size} total)"
-    $link_store[channel].collect { |l| msg channel, "http://#{l[:url]} posted by #{l[:nick]}" }[-3..-1]
+    urls = $link_store[channel].map { |l| "http://#{l[:url]} posted by #{l[:nick]}" } || []
+    urls.uniq[-3..-1].each { |url| msg channel, url }
   else
     msg channel, "No URLs yet!"
   end
