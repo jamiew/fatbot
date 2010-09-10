@@ -1,1 +1,4 @@
 twitter.yml
+*.log
+startup.sh
+nohup.out
