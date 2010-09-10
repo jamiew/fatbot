@@ -148,7 +148,7 @@ end
 # echo back collected URLs
 on :channel, /^\!(links|lionks)/i do
   if $link_store[channel]
-    msg channel, "Most recent links (#{$link_store[channel].size} total)"
+    # msg channel, "Most recent links (#{$link_store[channel].size} total)"
     urls = $link_store[channel].map { |l| "http://#{l[:url]} posted by #{l[:nick]}" } || []
     urls.uniq.reverse[0..2].each { |url| msg channel, url }
   else
