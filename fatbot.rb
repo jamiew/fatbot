@@ -36,7 +36,7 @@ end
 
 # CONNECT
 on :connect do
-  join "#fatlab", "#knowyourmeme", "#omgkym"
+  join "#fatlab", "#knowyourmeme", "#memelab", "#omgkym", "#diaspora-dev"
 end
 
 # echo things like "quote this: some text"
@@ -44,33 +44,35 @@ on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
 end
 
-# give me a meme using Automeme's "ENTERPRISE" API (by inky)
+# print a randomly generated meme phrase using Automeme API by @inky
 on :channel, /^\!meme/i do
  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
  msg channel, meme
 end
 
-# print a Kanye quote from THE QUOTABLE KANYE, http://jamiedubs.com/quotable-kanye/
+# print a Kanye quote from QUOTABLE KANYE by @jamiew, http://jamiedubs.com/quotable-kanye/
 on :channel, /^\!kanye/i do
  quote = open("http://jamiedubs.com/quotable-kanye/api.txt").read.chomp rescue 'ERROR: could not reach Kanye Quote DB :-('
  msg channel, quote
 end
 
 # post to a shared twitter account
-# keep your settings in twiter.yml
+# keep your settings (username, password) in twitter.yml
 on :channel, /^\!twitter (.*)/i do
   return unless ops?(nick)
   cred = YAML.load(File.open('twitter.yml'))
-
-  httpauth = Twitter::HTTPAuth.new(cred['username'], cred['password'])
-  base = Twitter::Base.new(httpauth)
-  base.update(match[0])
-
-  msg channel, "*** affirmative #{nick}, posted to #{cred['username'].inspect}"
+  begin
+    httpauth = Twitter::HTTPAuth.new(cred['username'], cred['password'])
+    base = Twitter::Base.new(httpauth)
+    base.update(match[0])
+    msg channel, "*** affirmative #{nick}, posted to #{cred['username'].inspect}"
+  rescue
+    msg channel, "Failed to update Twitter :( error => #{$!}"
+  end
 end
 
 
-# ..
+# print results of Twitter.com search for a phrase
 on :channel, /^\!search_twitter (.*)/i do
   begin
     case match[0]
@@ -97,7 +99,7 @@ on :channel, /^\!taco/i do
   raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
 end
 
-# change the topic by proxy (for bot-ops)
+# change the topic (for people in ops? but without real ops)
 on :channel, /^\!topic (.*)/i do
    topic(channel, "#{match[0]} [#{nick}]") if ops?(nick)
 end
@@ -111,8 +113,6 @@ on :channel, /^\!(swineflu|pigflu).*/i do
   begin
     page = Mechanize.new.get(url)
     aggregates = (page/'script').map { |i| i.content }
-    
-    #initialize('200906081850/aggregates.js', '200906081850/states.js', '200906081850');
 
     if aggregates[5] =~ /(\d+)\/aggregates.js/
       timedate = TwitterSearch::Tweet.time_ago_or_time_stamp( Time.parse($1) )
@@ -129,7 +129,6 @@ on :channel, /^\!(swineflu|pigflu).*/i do
 
     cases = usdata["cases"]
     fatal = usdata["Fatal"]
-    
     text = "U.S. Human Cases of H1N1 Flu Infection (As of #{timedate}): Cases: #{cases} - Deaths: #{fatal} -- http://flutracker.rhizalabs.com/"
 
   rescue Exception => e
