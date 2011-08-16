@@ -22,15 +22,24 @@ $link_store ||= {}
 $twitter ||= TwitterSearch::Client.new
 
 configure do |c|
-  c.nick     = "dubtron"
+  c.nick     = "dubtr0n"
   c.realname = "jamiew's bot"
   c.server   = "irc.freenode.net"
   c.port     = 6667
+  c.verbose  = true
+  c.version   = "FATBOT <http://github.com/jamiew/fatbot>"
 end
 
 # NickServ-based security: simple check for FAT Lab fellows
-def ops?(nick)
-  ['jamiew','ttttbx','fi5e','randofo','bekathwia','MissSubmarine','gleuch','agoasi','monki','bennett4senate'].include?(nick)
+helpers do
+  def ops?(nick)
+   ['jamiew','ttttbx','fi5e','randofo','bekathwia','MissSubmarine','gleuch','agoasi','monki','bennett4senate'].include?(nick)
+  end
+
+  def check
+    msg channel, "dubtron is enabled for this channel, #{channel}"
+  end
+
 end
 
 
@@ -42,6 +51,10 @@ end
 # echo things like "quote this: some text"
 on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
+end
+
+on :channel, /status/ do
+  check
 end
 
 # print a randomly generated meme phrase using Automeme API by @inky
