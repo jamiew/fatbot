@@ -35,26 +35,17 @@ helpers do
   def ops?(nick)
    ['jamiew','ttttbx','fi5e','randofo','bekathwia','MissSubmarine','gleuch','agoasi','monki','bennett4senate'].include?(nick)
   end
-
-  def check
-    msg channel, "dubtron is enabled for this channel, #{channel}"
-  end
-
 end
 
 
 # CONNECT
 on :connect do
-  join "#fatlab", "#knowyourmeme", "#memelab", "#omgkym", "#diaspora-dev"
+  join "#fatlab", "#knowyourmeme", "#tumblrs", "#diaspora-dev"
 end
 
 # echo things like "quote this: some text"
 on :channel, /^\!echo (.*)/i do
   msg channel, "#{match[0]}" 
-end
-
-on :channel, /status/ do
-  check
 end
 
 # print a randomly generated meme phrase using Automeme API by @inky
