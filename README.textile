@@ -1,36 +1,39 @@
-  __      _     _      _    
+pre.   __      _     _      _    
  / _|__ _| |_  | |__ _| |__ 
 |  _/ _` |  _| | / _` | '_ \
 |_| \__,_|\__| |_\__,_|_.__/
-                            
+
 A helpful bot for the F.A.T. IRC channel
-made using the Isaac library 
--~-> irc://irc.freenode.net/#fatlab
--~-> http://fffff.at
+Built with ruby & isaac
+-~-> "irc://irc.freenode.net/#fatlab":irc://irc.freenode.net/#fatlab
+-~-> "http://fffff.at":http://fffff.at
 
 
-=== Commands ===
+h2. Commands
 
 !echo <your text here>
 Repeat something. See if bot works.
 
 !meme
-Spout an automeme from http://meme.boxofjunk.ws/api.html
+Spout an automeme from "http://automeme.net/":http://automeme.net/
 
-!swineflu
-Print the latest H1N1 stats from Rhiza Labs FluTracker, http://flutracker.rhizalabs.com/ (scary)
-
-!taco
-Gives you a random taco using a broken /me
+!hipster
+Spout a hipster-flavored automeme
 
 !kanye
-Random Kanye West quote via http://jamiedubs.com/quotable-kanye
+Random Kanye West quote via "http://jamiedubs.com/quotable-kanye":http://jamiedubs.com/quotable-kanye
+
+!taco
+Gives you a taco
+
+!swineflu
+Print the latest H1N1 stats from "Rhiza Labs FluTracker":http://flutracker.rhizalabs.com/
 
 !twitter <msg>
-Post msg to a shared twitter account (require permission)
+Post msg to a shared twitter account (requires permission)
 
 !search_twitter <keywords>
-Print the latest twitter results for a given search (can be noisy)
+Print the latest twitter results for a given search
 
 !topic <msg>
 Set the channel topic to msg, no ops required (requires permission)
@@ -39,15 +42,14 @@ Set the channel topic to msg, no ops required (requires permission)
 Prints the 3 last-mentioned URLs (stored in memory)
 
 
-=== Wishlist ===
+h2. Wishlist
 
-- !seen <nick> -- for when someone last joined
-- infobot-style question/answer storage (channel FAQ)
-- multi-user Twitter configuration
+* !seen <nick> -- for when someone last joined
+* infobot-style question/answer storage (channel FAQ)
+* multi-user Twitter configuration
 
 
-
-=== Authors ===
+h2. Authors
 
 * Jamie Wilkinson <http://github.com/jamiew>
 * Sam Lehman <http://github.com/samlehman>
