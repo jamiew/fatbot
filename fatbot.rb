@@ -49,13 +49,19 @@ on :channel, /^\!echo (.*)/i do
 end
 
 # print a randomly generated meme phrase using Automeme API by @inky
-on :channel, /^\!meme/i do
+on :channel, /^\!meme$/i do
  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
  msg channel, meme
 end
 
+# print a hipster-meme quote
+on :channel, /^\!hipster$/i do
+  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1&vocab=hipster").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
+  msg channel, meme
+end
+
 # print a Kanye quote from QUOTABLE KANYE by @jamiew, http://jamiedubs.com/quotable-kanye/
-on :channel, /^\!kanye/i do
+on :channel, /^\!kanye$/i do
  quote = open("http://jamiedubs.com/quotable-kanye/api.txt").read.chomp rescue 'ERROR: could not reach Kanye Quote DB :-('
  msg channel, quote
 end
@@ -97,7 +103,7 @@ on :channel, /^\!search_twitter (.*)/i do
 end
 
 # give you a taco. via gerry
-on :channel, /^\!taco/i do
+on :channel, /^\!taco$/i do
   tacos = ['carnitas', 'barbacoa', 'fish', 'shrimp', 'swineflu']
   # raw ["ACTION #{channel} :/me ", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
   raw ["NOTICE #{channel} :", "gives #{nick} a #{tacos[(rand*tacos.length).floor]} taco"].join
@@ -112,7 +118,7 @@ end
 # data is from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker:
 # http://flutracker.rhizalabs.com/
 # data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License. 
-on :channel, /^\!(swineflu|pigflu).*/i do
+on :channel, /^\!(swineflu|pigflu)$/i do
   url, shorturl, totals, usdata = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", [], 0
   begin
     page = Mechanize.new.get(url)
@@ -160,10 +166,10 @@ on :channel, /^\!(links|lionks)/i do
 end
 
 # generate IRC stats using pisg
-on :channel, /^\!stats/i do
+on :channel, /^\!stats$/i do
   begin
     system("#{File.dirname(__FILE__)}/../pisg/pisg &")
-    msg channel, "stats regenerated for channel, http://173.45.226.44/irc/#{channel.to_s.gsub('#','').downcase}.html"
+    msg channel, "Rebuilding stats for this channel: http://173.45.226.44/irc/#{channel.to_s.gsub('#','').downcase}.html"
   rescue
     msg channel, "Error generating stats: #{$!}"
   end
@@ -176,3 +182,4 @@ end
 #   puts "#{channel} <#{nick}> #{msg}"
 #   # DB[:messages] << {:channel => channel, :nick => nick, :message => msg, :at => Time.now}
 # end
+
