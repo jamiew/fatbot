@@ -1,2 +1,2 @@
 #!/bin/sh
-nohup ./fatbot.rb &
+nohup ./fatbot.rb > fatbot.log &
