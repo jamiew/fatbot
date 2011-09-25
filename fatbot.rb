@@ -26,7 +26,7 @@ configure do |c|
   c.realname = "jamiew's bot"
   c.server   = "irc.freenode.net"
   c.port     = 6667
-  c.verbose  = true
+  c.verbose  = false
   c.version   = "FATBOT <http://github.com/jamiew/fatbot>"
 end
 
@@ -40,7 +40,7 @@ end
 
 # CONNECT
 on :connect do
-  join "#fatlab", "#knowyourmeme", "#tumblrs", "#diaspora-dev"
+  join "#fatlab", "#knowyourmeme", "#tumblrs", "#diaspora-dev", "#vhx"
 end
 
 # echo things like "quote this: some text"
