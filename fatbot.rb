@@ -12,6 +12,7 @@ require 'rubygems'
 require 'isaac'
 require 'mechanize' # for !swineflu
 require 'twitter' # for !twitter posting
+require 'json'
 
 %w{/vendor /vendor/utils}.collect{ |dir| $:.unshift File.dirname(__FILE__)+dir }
 %w{twitter_search flickraw}.collect{ |lib| require(lib).to_s }
@@ -172,6 +173,32 @@ on :channel, /^\!stats$/i do
     msg channel, "Rebuilding stats for this channel: http://173.45.226.44/irc/#{channel.to_s.gsub('#','').downcase}.html"
   rescue
     msg channel, "Error generating stats: #{$!}"
+  end
+end
+
+# print number of open issues for diaspora/diaspora repository
+on :channel, /^!issues ?(.*)$/i do
+  begin 
+    repo = match[0] && !match[0].empty? ? match[0] : "diaspora/diaspora"
+    page = Mechanize.new.get("https://github.com/api/v2/json/issues/list/#{repo}/open")
+    json = JSON.parse(page.body)
+    issues = json['issues']
+
+    stats = {:features => 0, :bugs => 0, :other => 0}
+    issues.each do |issue|
+      if issue['labels'].include?('feature')
+        stats[:features] += 1
+      elsif issue['labels'].include?('bug')
+        stats[:bugs] += 1
+      else
+        stats[:other] += 1
+      end
+    end
+
+    url = "https://github.com/#{repo}/issues"
+    msg channel, "#{issues.length} open issues for #{repo}: #{stats.sort_by{|k,v| v }.reverse.map{|k,v| "#{v} #{k}" }.join(', ')} #{url}"
+  rescue
+    msg channel, "Issues getting issues: #{$!}"
   end
 end
 
