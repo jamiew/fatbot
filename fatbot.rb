@@ -4,7 +4,7 @@
 # http://jamiedubs.com
 #
 # dependencies: isaac, sequel, jnunemaker-twitter, mechanize
- 
+
 require 'time'
 require 'open-uri'
 
@@ -46,7 +46,7 @@ end
 
 # echo things like "quote this: some text"
 on :channel, /^\!echo (.*)/i do
-  msg channel, "#{match[0]}" 
+  msg channel, "#{match[0]}"
 end
 
 # print a randomly generated meme phrase using Automeme API by @inky
@@ -118,7 +118,7 @@ end
 # swine flu report (USA only for now)
 # data is from Rhiza Labs, LLC's (http://www.rhizalabs.com/) FluTracker:
 # http://flutracker.rhizalabs.com/
-# data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License. 
+# data is released under Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License.
 on :channel, /^\!(swineflu|pigflu)$/i do
   url, shorturl, totals, usdata = "http://flutracker.rhizalabs.com/flu/gmap.html", "http://bit.ly/9wwcR", [], 0
   begin
@@ -180,8 +180,8 @@ end
 # usage: "!issues jamiew/git-friendly"
 # adds some default repos for specific channels
 on :channel, /^!issues ?(.*)$/i do
-  begin 
-    
+  begin
+
     repo = match[0] && !match[0].empty? && match[0] || nil
     repo ||= 'diaspora/diaspora' if channel =~ /diaspora/
 
@@ -211,6 +211,15 @@ on :channel, /^!issues ?(.*)$/i do
     msg channel, "Issues getting issues: #{$!}"
   end
 end
+
+on :channel, /^!(fb|facebook)$/i do
+  url = "http://download.finance.yahoo.com/d/quotes.csv?s=FB&f=sb2b3jk"
+  raw = open(url).read.chomp
+  data = raw.split(',')
+  msg channel, "$FB price: #{data[1..-1]}"
+end
+
+
 
 # lastly, do logging
 # from http://github.com/jamie/ircscribe/
