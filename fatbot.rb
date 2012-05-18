@@ -176,17 +176,27 @@ on :channel, /^\!stats$/i do
   end
 end
 
-# print number of open issues for diaspora/diaspora repository
+# print number of open issues for specified repository
+# usage: "!issues jamiew/git-friendly"
+# adds some default repos for specific channels
 on :channel, /^!issues ?(.*)$/i do
   begin 
-    repo = match[0] && !match[0].empty? ? match[0] : "diaspora/diaspora"
+    
+    repo = match[0] && !match[0].empty? && match[0] || nil
+    repo ||= 'diaspora/diaspora' if channel =~ /diaspora/
+
+    # TODO handle blank repo more gracefully than this
+    raise "You need to specify a repository like 'jamiew/fatbot' as an argument" if repo.nil? || repo.empty?
+
     page = Mechanize.new.get("https://github.com/api/v2/json/issues/list/#{repo}/open")
     json = JSON.parse(page.body)
     issues = json['issues']
 
-    stats = {:features => 0, :bugs => 0, :other => 0}
+    stats = {:pull_requests => 0, :features => 0, :bugs => 0, :other => 0}
     issues.each do |issue|
-      if issue['labels'].include?('feature')
+      if issue['pull_request_url']
+        stats[:pull_requests] += 1
+      elsif issue['labels'].include?('feature')
         stats[:features] += 1
       elsif issue['labels'].include?('bug')
         stats[:bugs] += 1
