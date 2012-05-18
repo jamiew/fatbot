@@ -216,7 +216,7 @@ on :channel, /^!(fb|facebook)$/i do
   url = "http://download.finance.yahoo.com/d/quotes.csv?s=FB&f=sb2b3jk"
   raw = open(url).read.chomp
   data = raw.split(',')
-  msg channel, "$FB price: #{data[1..-1]}"
+  msg channel, "Current $FB price: #{data[1]} -- http://bit.ly/nasdaq_fb"
 end
 
 
