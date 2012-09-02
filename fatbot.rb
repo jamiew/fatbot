@@ -219,9 +219,13 @@ end
 on :channel, /^\$(.*)$/i do
   ticker = match[0].to_s.upcase
   url = "http://download.finance.yahoo.com/d/quotes.csv?s=#{ticker}&f=sb2b3jk"
-  raw = open(url).read.chomp
-  data = raw.split(',')
-  msg channel, "Current $#{ticker} price: #{data[1]} -- http://www.google.com/finance?q=#{ticker}"
+  begin
+    raw = open(url).read.chomp
+    data = raw.split(',')
+    msg channel, "Current $#{ticker} price: #{data[1]} -- http://www.google.com/finance?q=#{ticker}"
+  rescue
+    msg channel, "Error trying to fetch data for #{ticket}: #{$!.inspect}"
+  end
 end
 
 
