@@ -41,7 +41,7 @@ end
 
 # CONNECT
 on :connect do
-  join "#fatlab", "#knowyourmeme", "#tumblrs", "#diaspora-dev", "#vhx", "#ofdev", "#nerdbeers"
+  join "#fatlab", "#knowyourmeme"
 end
 
 # echo things like "quote this: some text"
