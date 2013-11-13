@@ -51,13 +51,13 @@ end
 
 # print a randomly generated meme phrase using Automeme API by @inky
 on :channel, /^\!meme$/i do
- meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
+ meme = open("http://api.automeme.net/moar.txt?lines=1").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
  msg channel, meme
 end
 
 # print a hipster-meme quote
 on :channel, /^\!hipster$/i do
-  meme = open("http://meme.boxofjunk.ws/moar.txt?lines=1&vocab=hipster").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
+  meme = open("http://api.automeme.net/moar.txt?lines=1&vocab=hipster").read.chomp rescue 'ERROR: could not reach AutoMeme :-('
   msg channel, meme
 end
 
